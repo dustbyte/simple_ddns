@@ -72,7 +72,7 @@ func main() {
 	}
 
 	if len(resp.Data) == 0 {
-		fmt.Printf("Record A doesn't for domain %s, creating...\n", domain_name)
+		fmt.Printf("Record A doesn't exist for domain %s, creating...\n", domain_name)
 		record := dnsimple.ZoneRecord{Type: "A", Name: "", TTL: args.TTL, Content: ipAddr}
 
 		_, err := client.Zones.CreateRecord(accountId, domain_name, record)
