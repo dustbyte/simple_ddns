@@ -18,7 +18,7 @@ const (
 
 type Args struct {
 	Token string `klash-alias:"t" klash-help:"DNSimple API token"`
-	TTL   int    `klash-help:"TTL of the record in seconds"`
+	Ttl   int    `klash-help:"TTL of the record in seconds"`
 }
 
 func getIp() (string, error) {
@@ -34,7 +34,7 @@ func getIp() (string, error) {
 }
 
 func main() {
-	args := Args{Token: os.Getenv("DNSIMPLE_TOKEN"), TTL: defaultTtl}
+	args := Args{Token: os.Getenv("DNSIMPLE_TOKEN"), Ttl: defaultTtl}
 	leftover := klash.Parse(&args, "DynDNS for mere mortals")
 
 	if len(leftover) == 0 {
@@ -73,7 +73,7 @@ func main() {
 
 	if len(resp.Data) == 0 {
 		fmt.Printf("Record A doesn't exist for domain %s, creating...\n", domain_name)
-		record := dnsimple.ZoneRecord{Type: "A", Name: "", TTL: args.TTL, Content: ipAddr}
+		record := dnsimple.ZoneRecord{Type: "A", Name: "", TTL: args.Ttl, Content: ipAddr}
 
 		_, err := client.Zones.CreateRecord(accountId, domain_name, record)
 		if err != nil {

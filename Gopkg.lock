@@ -16,12 +16,12 @@
 [[projects]]
   name = "github.com/mota/klash"
   packages = ["."]
-  revision = "a45bf6ffe2157fa8c4fbc8a90347e55eaa4cc7b8"
-  version = "v0.1"
+  revision = "ca6c37a4c8c2e69831c428cf0c6daac80ab56c22"
+  version = "v0.2"
 
 [solve-meta]
   analyzer-name = "dep"
   analyzer-version = 1
-  inputs-digest = "116cffde73d1553522e303fa461b13129cbf84a96112db52ce68434c236500d8"
+  inputs-digest = "46c960e9d4205e8316b36d375e2e0780c6db2725b99da9fc7a576cf4ecb7f128"
   solver-name = "gps-cdcl"
   solver-version = 1

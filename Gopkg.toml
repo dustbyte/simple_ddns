@@ -29,6 +29,10 @@
   name = "github.com/dnsimple/dnsimple-go"
   version = "0.16.0"
 
+[[constraint]]
+  name = "github.com/mota/klash"
+  version = "v0.2"
+
 [prune]
   go-tests = true
   unused-packages = true
