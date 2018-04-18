@@ -12,8 +12,13 @@ import (
 	"github.com/mota/klash"
 )
 
+const (
+	defaultTtl = 60
+)
+
 type Args struct {
 	Token string `klash-alias:"t" klash-help:"DNSimple API token"`
+	TTL   int    `klash-help:"TTL of the record in seconds"`
 }
 
 func getIp() (string, error) {
@@ -29,7 +34,7 @@ func getIp() (string, error) {
 }
 
 func main() {
-	args := Args{Token: os.Getenv("DNSIMPLE_TOKEN")}
+	args := Args{Token: os.Getenv("DNSIMPLE_TOKEN"), TTL: defaultTtl}
 	leftover := klash.Parse(&args, "DynDNS for mere mortals")
 
 	if len(leftover) == 0 {
@@ -66,17 +71,29 @@ func main() {
 		os.Exit(1)
 	}
 
-	record := resp.Data[0]
-	if record.Content != ipAddr {
-		attributes := dnsimple.ZoneRecord{Content: ipAddr}
-		_, err := client.Zones.UpdateRecord(accountId, domain_name, record.ID, attributes)
+	if len(resp.Data) == 0 {
+		fmt.Printf("Record A doesn't for domain %s, creating...\n", domain_name)
+		record := dnsimple.ZoneRecord{Type: "A", Name: "", TTL: args.TTL, Content: ipAddr}
+
+		_, err := client.Zones.CreateRecord(accountId, domain_name, record)
 		if err != nil {
-			fmt.Printf("Couldn't update the A record for %s\n", domain_name)
+			fmt.Printf("Couldn't create the A record for domain %s\n", domain_name)
 			os.Exit(1)
 		}
-
-		fmt.Printf("Record A for %s successfully updated.\n", domain_name)
+		fmt.Printf("Record for domain name %s created.\n", domain_name)
 	} else {
-		fmt.Println("No change to perform.")
+		record := resp.Data[0]
+		if record.Content != ipAddr {
+			attributes := dnsimple.ZoneRecord{Content: ipAddr}
+			_, err := client.Zones.UpdateRecord(accountId, domain_name, record.ID, attributes)
+			if err != nil {
+				fmt.Printf("Couldn't update the A record for %s\n", domain_name)
+				os.Exit(1)
+			}
+
+			fmt.Printf("Record A for %s successfully updated.\n", domain_name)
+		} else {
+			fmt.Println("No change to perform.")
+		}
 	}
 }
