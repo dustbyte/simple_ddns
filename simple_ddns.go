@@ -9,7 +9,12 @@ import (
 	"strings"
 
 	"github.com/dnsimple/dnsimple-go/dnsimple"
+	"github.com/mota/klash"
 )
+
+type Args struct {
+	Token string `klash-alias:"t" klash-help:"DNSimple API token"`
+}
 
 func getIp() (string, error) {
 	resp, err := http.Get("http://ifconfig.kreog.net/")
@@ -24,20 +29,20 @@ func getIp() (string, error) {
 }
 
 func main() {
-	var token string
-	var assigned bool
+	args := Args{Token: os.Getenv("DNSIMPLE_TOKEN")}
+	leftover := klash.Parse(&args, "DynDNS for mere mortals")
 
-	if token, assigned = os.LookupEnv("DNSIMPLE_TOKEN"); !assigned {
-		fmt.Println("Cannot find token")
-		os.Exit(1)
-	}
-
-	if len(os.Args) == 1 {
+	if len(leftover) == 0 {
 		fmt.Printf("usage: %s domain_name\n", os.Args[0])
 		os.Exit(1)
 	}
 
-	domain_name := os.Args[1]
+	domain_name := leftover[0]
+
+	if args.Token == "" {
+		fmt.Println("A token must be provided")
+		os.Exit(1)
+	}
 
 	ipAddr, err := getIp()
 	if err != nil {
@@ -45,7 +50,7 @@ func main() {
 	}
 	fmt.Printf("IP address: %s\n", ipAddr)
 
-	client := dnsimple.NewClient(dnsimple.NewOauthTokenCredentials(token))
+	client := dnsimple.NewClient(dnsimple.NewOauthTokenCredentials(args.Token))
 
 	whoamiResponse, err := client.Identity.Whoami()
 	if err != nil {
@@ -71,5 +76,7 @@ func main() {
 		}
 
 		fmt.Printf("Record A for %s successfully updated.\n", domain_name)
+	} else {
+		fmt.Println("No change to perform.")
 	}
 }
