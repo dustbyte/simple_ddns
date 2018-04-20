@@ -22,7 +22,7 @@ type Args struct {
 }
 
 func getIp() (string, error) {
-	resp, err := http.Get("http://ifconfig.kreog.net/")
+	resp, err := http.Get("http://ifconfig.cloud/")
 	if err != nil {
 		fmt.Printf("Couldn't retrieve self ip address: %v\n", err)
 	}
